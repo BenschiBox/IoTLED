@@ -18,6 +18,6 @@ TODO
 * Program LED effects
 * Setting up webserver
 * Configure webserver to control LEDs
-* Learn android app development (LOL)
+* Learn android app development
 * Get app to communicate with the webserver
 * Finalize App Design and LED effects
