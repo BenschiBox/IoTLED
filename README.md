@@ -6,7 +6,7 @@ For now the goal is to control 2 LED-Strips over an android app, in which the us
 
 ## Built with
 * [arduino-esp32](https://github.com/espressif/arduino-esp32) - Arduino Core for ESP32
-* [FastLED](https://github.com/FastLED/FastLED) - Library for controlling the LEDs
+* [FastLED](https://github.com/FastLED/FastLED) - Library for controlling LEDs
 * ...
 
 ## Tremendous help from here
