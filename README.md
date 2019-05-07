@@ -2,7 +2,8 @@
 
 The aim of this Project is to create, setup and program an Internet of Things device / network capable of controlling adressable LED-Strips like WS2813.
 
-For now the goal is to control 2 LED-Strips over an android app, in which the user can select between different lightning setups and also a Music-Visualizer mode using an AUX input.
+For now the goal is to control 2 LED-Strips over an ~~android app~~ ESP32-driven webserver, in which the user can select between different lightning setups and also a Music-Visualizer mode using an AUX input.
+
 
 ## Built with
 * [arduino-esp32](https://github.com/espressif/arduino-esp32) - Arduino Core for ESP32
@@ -15,6 +16,8 @@ For now the goal is to control 2 LED-Strips over an android app, in which the us
 * https://tronixstuff.com/2013/01/31/tutorial-arduino-and-the-msgeq7-spectrum-analyzer/
 * [Devin Crawfords LED-Visualizer Project](https://github.com/DevonCrawford/LED-Music-Visualizer/blob/master/src/LED_Visualizer.ino)
 * [This awesome Video by BRUH Automation](https://www.youtube.com/watch?v=9KI36GTgwuQ)
+
+
 ## Goals
 
 * Finalize Hardware setup to work with external power supply and draw circuit configuration etc.
@@ -22,7 +25,7 @@ For now the goal is to control 2 LED-Strips over an android app, in which the us
 * Program custom LED effects
 * ~~Setting up webserver~~
 * ~~Configure webserver to control LEDs~~
-* Get app to communicate with the controller
-* Program music visualizer
-* Finalize App Design and LED effects
+* Get webserver to transfer data with the controller
+* Integrate music visualizer
+* Finalize Website-Design and LED effects
 * Integrate (Google) Assistant(s) _(?)_ 
