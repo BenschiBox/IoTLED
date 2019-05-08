@@ -1,0 +1,125 @@
+<!DOCTYPE HTML><html>
+<head>
+	<title>LED - Manager</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-red.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+	
+	<!-- Browser / App Favicon --> 
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#757575">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="theme-color" content="#ffffff">	
+	
+	<script>
+		// --------------- WebSocket handling ------------
+		var ws = null;
+		
+		function DisableButton(id) {
+			var element = document.getElementById(id);
+			if (!element.classList.contains('w3-disabled')) {
+				element.classList.add('w3-disabled');
+			}
+		}
+		
+		function EnableButton(id) {
+			var element = document.getElementById(id);
+			if (element.classList.contains('w3-disabled')) {
+				element.classList.remove('w3-disabled');
+				element.disabled = false;
+			}
+		}
+		
+		function OpenWebsocket() {
+		   ws = new WebSocket("ws://***REMOVED***/ws");
+		
+		   ws.onopen = function() {
+				EnableButton("inputText");
+				EnableButton("sendButton");
+				DisableButton("connectButton");
+				EnableButton("disconnectButton");
+		   };
+		 
+		   ws.onclose = function() {
+				DisableButton("inputText");
+				DisableButton("sendButton");
+				EnableButton("connectButton");
+				DisableButton("disconnectButton");
+		 
+				alert("Connection closed");
+		   };
+		}
+		
+		function SendData() {
+			var textToSend = document.getElementById("inputText").value;
+			ws.send(textToSend);
+		}
+		
+		function CloseWebsocket() {
+			ws.close();
+		}
+	</script>
+
+</head>
+
+<body>
+	<!-- Header -->
+	<header class="w3-container w3-theme w3-padding" id="myHeader">
+		<div class="w3-center">
+			<h1 class="w3-xxlarge w3-animate-bottom">LED - Manager</h1>
+		</div>
+	</header>
+
+	<!-- third -->
+	<div class="w3-row-padding w3-center w3-margin-top">
+		<div class="w3-third">
+			<div class="w3-card w3-container" style="min-height:460px">
+				<h3>Effect</h3><br>
+				<i class="fa fa-desktop w3-margin-bottom w3-text-theme" style="font-size:120px"></i>
+				<p>Rainbow</p>
+				<a id="btnRainbow1" class="w3-button w3-theme">On</a>
+				<a id="btnRainbow2" class="w3-button w3-theme">Off</a>
+				<br>
+				<p>Solid red</p>
+				<a id="btnSolid1" class="w3-button w3-theme">On</a>
+				<a id="btnSolid2" class="w3-button w3-theme">Off</a>					
+			</div>
+		</div>
+
+		<div class="w3-third">
+			<div class="w3-card w3-container" style="min-height:460px">
+				<h3>WebSocket test</h3><br>
+				<div class="w3-section">      
+				<input id="inputText" class="w3-input w3-disabled" type="text">
+				<label>Text to send</label>
+				</div>
+				<a onclick="SendData()" id="sendButton" class="w3-button w3-theme w3-disabled">Send</a>
+				<a onclick="OpenWebsocket()" id="connectButton" class="w3-button w3-theme">Connect</a>
+				<a onclick="CloseWebsocket()" id="disconnectButton" class="w3-button w3-theme w3-disabled">Disconnect</a>
+			</div>
+		</div>
+
+		<div class="w3-third">
+			<div class="w3-card w3-container" style="min-height:460px">
+				<h3>Design</h3><br>
+				<i class="fa fa-diamond w3-margin-bottom w3-text-theme" style="font-size:120px"></i>
+				<p>Paper like design</p>
+				<p>Bold colors and shadows</p>
+				<p>Equal across platforms</p>
+				<p>Equal across devices</p>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Footer -->
+	<!--<footer class="w3-container w3-theme-dark w3-bottom">
+		<p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+	</footer>-->
+	
+</body>
+</html>
