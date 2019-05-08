@@ -1,4 +1,7 @@
 #include "WiFi.h"
+#include "ESPAsyncWebServer.h"
+#include "SPIFFS.h"
+//#include "FS.h"
 #include <FastLED.h>
 
 FASTLED_USING_NAMESPACE
@@ -10,23 +13,20 @@ FASTLED_USING_NAMESPACE
 #define NUM_LEDS    300
 CRGB leds[NUM_LEDS];
 
-#define BRIGHTNESS          20
+#define BRIGHTNESS         10
 #define FRAMES_PER_SECOND  300
 
-
 uint8_t gHue = 0; // rotating "base color" for rainbow effect
+
 // Network
 const char* ssid     = "***REMOVED***";
 const char* password = "***REMOVED***";
 
-// Set web server port number to 80
-WiFiServer server(80);
-
-IPAddress local_IP(10, 0, 0, 2);
+IPAddress local_IP(***REMOVED***);
 IPAddress gateway(***REMOVED***);
 IPAddress subnet(255, 255, 255, 0);
-IPAddress primaryDNS(8, 8, 8, 8);   //optional
-IPAddress secondaryDNS(8, 8, 4, 4); //optional
+IPAddress primaryDNS(8, 8, 8, 8);   // optional
+IPAddress secondaryDNS(8, 8, 4, 4); // optional
 
 // Variable to store the HTTP request
 String header;
@@ -35,16 +35,54 @@ String header;
 String effect1State = "off";
 String effect2State = "off";
 
+// Create AsyncWebServer and WebSocket object on port 80
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+AsyncWebSocketClient * globalClient = NULL;
+
+void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len) {
+  if(type == WS_EVT_CONNECT) {
+    Serial.println("Websocket client connection received");
+    globalClient = client;
+  } else if(type == WS_EVT_DISCONNECT) {
+    Serial.println("Client disconnected");
+    Serial.println("-----------------------");
+    globalClient = NULL;
+  } else if(type == WS_EVT_DATA){
+    Serial.print("Data received: ");
+    for(int i=0; i < len; i++) {
+      Serial.print((char) data[i]);
+    }
+    Serial.println();
+  }
+}
+
+/* // Replaces HTML placeholder with state values
+String processor(const String& var) {
+  if (var == "EFFECT1STATE") {
+    return effect1State;
+  } else if (var == "EFFECT2STATE") {
+    return effect2State;
+  }
+  return "!!!PLACEHOLDER ERROR!!!"; // replaces not (yet) defined placeholder with this
+} */
 
 void setup() {
   Serial.begin(115200);
 
-  // -----------------------------   LEDS   -----------------------------
+  // -----------------------------   SPIFFS   -----------------------------
+
+  if(!SPIFFS.begin(true)) {
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    return;
+  }
+  
+  // -----------------------------    LEDS    -----------------------------
 
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
   
-  // -----------------------------   WIFI   -----------------------------
+  // -----------------------------    WIFI    -----------------------------
 
   // Configure WiFi for Static IP
   if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
@@ -64,107 +102,99 @@ void setup() {
   Serial.println("WiFi connected.");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+
+  // -----------------------------   SERVER   -----------------------------
+
+  // Route for root / web page
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/index.html", "text/html");
+  });
+
+  // Route for icons
+  server.on("/android-chrome-192x192.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/android-chrome-192x192.png", "image/png");
+  });
+  server.on("/android-chrome-512x512.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/android-chrome-512x512.png", "image/png");
+  });
+  server.on("/apple-touch-icon.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/apple-touch-icon.png", "image/png");
+  });
+  server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/favicon.ico", "image/x-icon");
+  });    
+  server.on("/favicon-16x16.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/favicon-16x16.png", "image/png");
+  });
+  server.on("/favicon-32x32.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/favicon-32x32.png", "image/png");
+  });
+  server.on("/mstile-150x150.png", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/mstile-150x150.png", "image/png");
+  });
+  server.on("/safari-pinned-tab.svg", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/safari-pinned-tab.svg", "image/svg");
+  });
+  server.on("/browserconfig.xml", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/browserconfig.xml", "text/xml");
+  });  
+  server.on("/site.webmanifest", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/site.webmanifest", "text/webmanifest");
+  });    
+  
+  /* // Route to load style.css file
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/style.css", "text/css");
+  });
+
+  // Route to turn effect1 on
+  server.on("/effect1on", HTTP_GET, [](AsyncWebServerRequest *request){
+    Serial.println("LED: Rainbow on");
+    effect1State = "on";
+    effect2State = "off";    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  
+  // Route to turn effect1 off
+  server.on("/effect1off", HTTP_GET, [](AsyncWebServerRequest *request){
+    Serial.println("LED: off");
+    effect1State = "off";
+    effect2State = "off";    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+
+  // Route to turn effect2 on
+  server.on("/effect2on", HTTP_GET, [](AsyncWebServerRequest *request){
+    Serial.println("LED: Solid red on");
+    effect1State = "off";
+    effect2State = "on";    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  
+  // Route to turn effect2 off
+  server.on("/effect2off", HTTP_GET, [](AsyncWebServerRequest *request){
+    Serial.println("LED: off");
+    effect1State = "off";
+    effect2State = "off";    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  }); */
+
+  ws.onEvent(onWsEvent);
+  server.addHandler(&ws);
   server.begin();
 }
 
 void loop(){
-  WiFiClient client = server.available();   // Listen for incoming clients
-
-  if (client) {                             // If a new client connects,
-    Serial.println("New Client.");          // print a message out in the serial port
-    String currentLine = "";                // make a String to hold incoming data from the client
-    while (client.connected()) {            // loop while the client's connected
-      if (client.available()) {             // if there's bytes to read from the client,
-        char c = client.read();             // read a byte, then
-        Serial.write(c);                    // print it out the serial monitor
-        header += c;
-        if (c == '\n') {                    // if the byte is a newline character
-          // if the current line is blank, you got two newline characters in a row.
-          // that's the end of the client HTTP request, so send a response:
-          if (currentLine.length() == 0) {
-            // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
-            // and a content-type so the client knows what's coming, then a blank line:
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println("Connection: close");
-            client.println();
-            
-            // switches LED effects
-            if (header.indexOf("GET /effect1/on") >= 0) {
-              Serial.println("LED: Rainbow on");
-              effect1State = "on";
-              effect2State = "off";
-            } else if (header.indexOf("GET /effect2/on") >= 0) {
-              Serial.println("LED: Solid red");
-              effect1State = "off";
-              effect2State = "on";
-            } else if (header.indexOf("GET /effect1/off") >= 0 || header.indexOf("GET /effect2/off") >= 0) {
-              Serial.println("LED: off");
-              effect1State = "off";
-              effect2State = "off";
-            }
-            
-            // Display the HTML web page
-            client.println("<!DOCTYPE HTML><html>");
-            client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
-            client.println("<link rel=\"icon\" href=\"data:,\">");
-            // CSS to style the on/off buttons 
-            // Feel free to change the background-color and font-size attributes to fit your preferences
-            client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
-            client.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
-            client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-            client.println(".button2 {background-color: #555555;}</style></head>");
-            
-            // Web Page Heading
-            client.println("<h1>ESP32 Web Server</h1>");
-            
-            // Display current state, and ON/OFF buttons for effect1  
-            client.println("<p>Rainbow - Effect " + effect1State + "</p>");
-            // If the effect1State is off, it displays the ON button       
-            if (effect1State=="off") {
-              client.println("<p><a href=\"/effect1/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/effect1/off\"><button class=\"button button2\">OFF</button></a></p>");
-            } 
-               
-            // Display current state, and ON/OFF buttons for GPIO 27  
-            client.println("<p>Solid red - Effect " + effect2State + "</p>");
-            // If the effect2State is off, it displays the ON button       
-            if (effect2State=="off") {
-              client.println("<p><a href=\"/effect2/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/effect2/off\"><button class=\"button button2\">OFF</button></a></p>");
-            }
-            client.println("");
-            
-            // The HTTP response ends with another blank line
-            client.println();
-            // Break out of the while loop
-            break;
-          } else { // if you got a newline, then clear currentLine
-            currentLine = "";
-          }
-        } else if (c != '\r') {  // if you got anything else but a carriage return character,
-          currentLine += c;      // add it to the end of the currentLine
-        }
-      } else {
-        delay(50);
-        if (!client.available()) {
-          break;
-        }
-      }
-    }
-    // Clear the header variable
-    header = "";
-    // Close the connection
-    client.stop();
-    Serial.println("Client disconnected.");
-    Serial.println("");
+  /*// Wait for WebSocket event then send
+  if(globalClient != NULL && globalClient->status() == WS_CONNECTED) {
+      String randomNumber = String(random(0,20));
+      globalClient->text(randomNumber);
   }
+  delay(1000);*/
   
   // Run selected LED effect
   if (effect1State == "on") {               // Rainbow
-    fill_rainbow( leds, NUM_LEDS, gHue, 7);
+    fill_rainbow(leds, NUM_LEDS, gHue, 7);
   } else if (effect2State == "on") {          // Solid Red
     fill_solid(leds, NUM_LEDS, CRGB::Red);
   } else if (effect1State == "off" && effect2State == "off") {
@@ -175,3 +205,11 @@ void loop(){
   EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
   FastLED.show();
 }
+
+
+// Useful for later
+
+// manual restart button (wire to a GPIO)
+//WiFi.disconnect(true);
+//SPIFFS.format();
+//ESP.restart();
