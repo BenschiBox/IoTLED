@@ -17,8 +17,28 @@
 	<meta name="theme-color" content="#ffffff">	
 	
 	<script>
-		// --------------- WebSocket handling ------------
-		var ws = null;
+		// --------------- WebSocket handling ------------		
+		ws = new WebSocket("ws://***REMOVED***/ws");
+		
+		ws.onopen = function() {
+			//EnableButton("inputText");
+			//EnableButton("sendButton");
+			//DisableButton("connectButton");
+			//EnableButton("disconnectButton");
+		};
+		 
+	    ws.onclose = function() {
+			//DisableButton("inputText");
+			//DisableButton("sendButton");
+			//EnableButton("connectButton");
+			//DisableButton("disconnectButton");
+	 
+			alert("Connection closed");
+		};
+		
+		ws.onmessage = function(evt) {
+			document.getElementById("inputText").value  = evt.data;
+		}
 		
 		function DisableButton(id) {
 			var element = document.getElementById(id);
@@ -34,35 +54,15 @@
 				element.disabled = false;
 			}
 		}
-		
-		function OpenWebsocket() {
-		   ws = new WebSocket("ws://***REMOVED***/ws");
-		
-		   ws.onopen = function() {
-				EnableButton("inputText");
-				EnableButton("sendButton");
-				DisableButton("connectButton");
-				EnableButton("disconnectButton");
-		   };
-		 
-		   ws.onclose = function() {
-				DisableButton("inputText");
-				DisableButton("sendButton");
-				EnableButton("connectButton");
-				DisableButton("disconnectButton");
-		 
-				alert("Connection closed");
-		   };
-		}
-		
+				
 		function SendData() {
 			var textToSend = document.getElementById("inputText").value;
 			ws.send(textToSend);
 		}
 		
-		function CloseWebsocket() {
-			ws.close();
-		}
+		//function CloseWebsocket() {
+		//	ws.close();
+		//}
 	</script>
 
 </head>
@@ -95,12 +95,12 @@
 			<div class="w3-card w3-container" style="min-height:460px">
 				<h3>WebSocket test</h3><br>
 				<div class="w3-section">      
-				<input id="inputText" class="w3-input w3-disabled" type="text">
+				<input id="inputText" class="w3-input" type="text">
 				<label>Text to send</label>
 				</div>
-				<a onclick="SendData()" id="sendButton" class="w3-button w3-theme w3-disabled">Send</a>
-				<a onclick="OpenWebsocket()" id="connectButton" class="w3-button w3-theme">Connect</a>
-				<a onclick="CloseWebsocket()" id="disconnectButton" class="w3-button w3-theme w3-disabled">Disconnect</a>
+				<a onclick="SendData()" id="sendButton" class="w3-button w3-theme">Send</a>
+				<!-- <a onclick="OpenWebsocket()" id="connectButton" class="w3-button w3-theme">Connect</a>-->
+				<!-- <a onclick="CloseWebsocket()" id="disconnectButton" class="w3-button w3-theme w3-disabled">Disconnect</a>-->
 			</div>
 		</div>
 
