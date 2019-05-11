@@ -38,22 +38,25 @@ String effect2State = "off";
 // Create AsyncWebServer and WebSocket object on port 80
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
-AsyncWebSocketClient * globalClient = NULL;
+//AsyncWebSocketClient * globalClient = NULL;
 
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len) {
   if(type == WS_EVT_CONNECT) {
     Serial.println("Websocket client connection received");
-    globalClient = client;
+    //globalClient = client;
   } else if(type == WS_EVT_DISCONNECT) {
     Serial.println("Client disconnected");
     Serial.println("-----------------------");
-    globalClient = NULL;
+    //globalClient = NULL;
   } else if(type == WS_EVT_DATA){
     Serial.print("Data received: ");
     for(int i=0; i < len; i++) {
       Serial.print((char) data[i]);
     }
     Serial.println();
+
+    ws.textAll("response from server!");
+    //globalClient->text("response from server!");
   }
 }
 
