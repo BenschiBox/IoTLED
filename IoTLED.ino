@@ -3,6 +3,7 @@
 #include "SPIFFS.h"
 //#include "FS.h"
 #include <FastLED.h>
+#include <ArduinoJson.h>
 
 FASTLED_USING_NAMESPACE
 
@@ -10,20 +11,21 @@ FASTLED_USING_NAMESPACE
 //#define CLK_PIN   4
 #define LED_TYPE    WS2813
 #define COLOR_ORDER GRB
-#define NUM_LEDS    300
+#define NUM_LEDS    5
 CRGB leds[NUM_LEDS];
 
-#define BRIGHTNESS         10
+#define BRIGHTNESS         10   // Default Brightness on ESP startup
 #define FRAMES_PER_SECOND  300
 
+uint8_t gBrightness = 20;
 uint8_t gHue = 0; // rotating "base color" for rainbow effect
 
 // Network
-const char* ssid     = "***REMOVED***";
-const char* password = "***REMOVED***";
+const char* ssid     = "Teubel";
+const char* password = "hte7411benjon";
 
-IPAddress local_IP(***REMOVED***);
-IPAddress gateway(***REMOVED***);
+IPAddress local_IP(192, 168, 178, 6);
+IPAddress gateway(192, 168, 178, 1);
 IPAddress subnet(255, 255, 255, 0);
 IPAddress primaryDNS(8, 8, 8, 8);   // optional
 IPAddress secondaryDNS(8, 8, 4, 4); // optional
@@ -50,14 +52,63 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
     //globalClient = NULL;
   } else if(type == WS_EVT_DATA){
     Serial.print("Data received: ");
+    String msg = "";
     for(int i=0; i < len; i++) {
-      Serial.print((char) data[i]);
+      msg += (char)data[i];
     }
-    Serial.println();
-
-    ws.textAll("response from server!");
+    
+    Serial.println(msg);
+    gBrightness = (uint8_t)atoi(msg.c_str());
+    
+    //ws.textAll("response from server!");
     //globalClient->text("response from server!");
   }
+}
+
+void loadSettings() {
+  File settings = SPIFFS.open("/settings.json", "r");
+  if (!settings) {
+    Serial.println("ERR: Failed to open settings JSON!");
+  }
+
+  // Allocate a temporary JsonDocument
+  // Don't forget to change the capacity to match your requirements.
+  StaticJsonDocument<200> doc;
+
+  // Deserialize the JSON document
+  DeserializationError error = deserializeJson(doc, settings);
+  if (error) {
+    Serial.println("ERR: Failed to deserialize JSON file!");
+  }
+
+  gBrightness = doc["brightness"];
+
+  Serial.print("Loaded brightness: ");
+  Serial.println(gBrightness);
+  settings.close();
+}
+
+void saveSettings() {
+  SPIFFS.remove("/settings.json");
+  
+  File settings = SPIFFS.open("/settings.json", "w");
+  if (!settings) {
+    Serial.println("ERR: Failed to open settings file for writing!");
+  }
+
+  // Allocate a temporary JsonDocument
+  // Don't forget to change the capacity to match your requirements.
+  StaticJsonDocument<200> doc;
+  
+  doc["brightness"] = gBrightness;
+  
+  // Serialize JSON to file
+  if (serializeJson(doc, settings) == 0) {
+    Serial.println("ERR: Failed to write to settings JSON!");
+  }
+
+  // Close the file
+  settings.close();
 }
 
 /* // Replaces HTML placeholder with state values
@@ -79,6 +130,14 @@ void setup() {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
+
+  /*
+  saveSettings();
+  Serial.println("Settings saved");
+  */
+
+  loadSettings();
+  Serial.println("Settings loaded");
   
   // -----------------------------    LEDS    -----------------------------
 
@@ -113,6 +172,12 @@ void setup() {
     request->send(SPIFFS, "/index.html", "text/html");
   });
 
+  // Route for settings JSON
+  server.on("/settings.json", HTTP_GET, [](AsyncWebServerRequest *request){
+    saveSettings();
+    request->send(SPIFFS, "/settings.json", "application/json");
+  });  
+
   // Route for icons
   server.on("/android-chrome-192x192.png", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/android-chrome-192x192.png", "image/png");
@@ -139,7 +204,7 @@ void setup() {
     request->send(SPIFFS, "/safari-pinned-tab.svg", "image/svg");
   });
   server.on("/browserconfig.xml", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/browserconfig.xml", "text/xml");
+    request->send(SPIFFS, "/browserconfig.xml", "application/xml");
   });  
   server.on("/site.webmanifest", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/site.webmanifest", "text/webmanifest");
@@ -196,16 +261,17 @@ void loop(){
   delay(1000);*/
   
   // Run selected LED effect
-  if (effect1State == "on") {               // Rainbow
-    fill_rainbow(leds, NUM_LEDS, gHue, 7);
-  } else if (effect2State == "on") {          // Solid Red
+  //if (effect1State == "on") {               // Rainbow
+  //  fill_rainbow(leds, NUM_LEDS, gHue, 7);
+  //} else if (effect2State == "on") {          // Solid Red
     fill_solid(leds, NUM_LEDS, CRGB::Red);
-  } else if (effect1State == "off" && effect2State == "off") {
-    fill_solid(leds, NUM_LEDS, CRGB::Black);
-  }
+  //} else if (effect1State == "off" && effect2State == "off") {
+  //  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  //}
 
   FastLED.delay(1000/FRAMES_PER_SECOND);
-  EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+  //EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+  FastLED.setBrightness(gBrightness);
   FastLED.show();
 }
 
