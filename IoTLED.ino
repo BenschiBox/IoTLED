@@ -1,7 +1,6 @@
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
 #include "SPIFFS.h"
-//#include "FS.h"
 #include <FastLED.h>
 #include <ArduinoJson.h>
 
@@ -190,7 +189,7 @@ void setup() {
   });
   server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/favicon.ico", "image/x-icon");
-  });    
+  });
   server.on("/favicon-16x16.png", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/favicon-16x16.png", "image/png");
   });
@@ -205,10 +204,10 @@ void setup() {
   });
   server.on("/browserconfig.xml", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/browserconfig.xml", "application/xml");
-  });  
+  });
   server.on("/site.webmanifest", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/site.webmanifest", "text/webmanifest");
-  });    
+  });
   
   /* // Route to load style.css file
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
