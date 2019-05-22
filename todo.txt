@@ -1,5 +1,5 @@
-server stores local json file
 
-onload js request for json file (get or socket?)
-
-on client value change, update effects and json file, and send changed value to all connected clients
+BASIC EFFECTS:
+SOLID COLOR
+	Split function
+	
