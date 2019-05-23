@@ -19,93 +19,92 @@
 </head>
 
 <body>
-	<!-- Sidebar -->
-	<div class="w3-sidebar w3-animate-left w3-bar-block w3-card w3-theme-light" style="display:none" id="sidebar">
-		<button onclick="closeSidebar()" class="w3-bar-item w3-large w3-dark-grey">Close &times;</button>
-		<a href="#" class="w3-bar-item w3-border-bottom w3-button w3-deep-orange">Link 1</a>
-		<a href="#" class="w3-bar-item w3-border-bottom w3-button">Link 2</a>
-		<a href="#" class="w3-bar-item w3-border-bottom w3-button">Link 3</a>
+	<!-- Inputlock overlay -->
+	<div class="w3-overlay w3-display-container" style="display:block" id="inputlock">
+		<div class="w3-display-middle w3-center w3-card w3-white w3-padding-large" style="pointer-events:none" 
+		onclick="window.location.reload(true)" id="inputlockreload">
+			<i class="w3-jumbo fas fa-lock" id="inputlockicon"></i>
+			<h2 class="w3-xlarge" style="display:none" id="inputlocktext">Verbindungsfehler, tippen zum wiederholen!</h2>
+		</div>
 	</div>
+
+	<!-- Sidebar -->
+	<nav class="w3-sidebar w3-animate-left w3-bar-block w3-card w3-theme-light" style="display:none;z-index:4" id="sidebar">
+		<div class="w3-display-container">
+			<button onclick="closeSidebar()" class="w3-bar-item w3-large w3-dark-grey w3-padding-16" style="cursor:pointer">
+			Effekt-Menü <span class="w3-display-right w3-margin-right">&times;</span></button>
+		</div>
+		<a href="#" class="w3-bar-item w3-border-bottom w3-button effectlink w3-deep-orange" 
+		onclick="changeEffect(event, 'effect1')">Effect 1</a>
+		<a href="#" class="w3-bar-item w3-border-bottom w3-button effectlink" onclick="changeEffect(event, 'effect2')">Effect 2</a>
+		<a href="#" class="w3-bar-item w3-border-bottom w3-button effectlink" onclick="changeEffect(event, 'effect3')">Effect 3</a>
+	</nav>
+	
+	<!-- Overlay -->
+	<div class="w3-overlay" onclick="closeSidebar()" id="overlay"></div>
 	
 	<!-- Header -->
 	<header class="w3-container w3-theme w3-display-container" id="myHeader">
-		<button class="w3-button w3-hover-red w3-xlarge" onclick="openSidebar()">☰</button>
+		<button class="w3-button w3-hover-red w3-large" onclick="openSidebar()">☰</button>
 		<div class="w3-display-middle">
-			<h1 class="w3-xlarge w3-animate-bottom">LED - Manager</h1>
+			<h1 class="w3-xlarge">LED - Manager</h1>
 		</div>
 	</header>
 
-	<!-- third -->
-	<div class="w3-row-padding w3-center w3-margin-top">
-		<div class="w3-third">
-			<div class="w3-card w3-container" style="min-height:460px">
-				<h3>Effect</h3><br>
-				<i class="fa fa-desktop w3-margin-bottom w3-text-theme" style="font-size:120px"></i>
-				<p>Rainbow</p>
-				<a id="btnRainbow1" class="w3-button w3-theme">On</a>
-				<a id="btnRainbow2" class="w3-button w3-theme">Off</a>
-				<br>
-				<p>Solid red</p>
-				<a id="btnSolid1" class="w3-button w3-theme">On</a>
-				<a id="btnSolid2" class="w3-button w3-theme">Off</a>					
-			</div>
+	<!-- EFFECT 1 -->
+	<div id="effect1" class="w3-center w3-margin-top w3-card w3-container effect">
+		<h3>Effect</h3>
+		<p>Rainbow</p>
+		<a id="btnRainbow1" class="w3-button w3-theme">On</a>
+		<a id="btnRainbow2" class="w3-button w3-theme">Off</a>
+		<br>
+		<p>Solid red</p>
+		<a id="btnSolid1" class="w3-button w3-theme">On</a>
+		<a id="btnSolid2" class="w3-button w3-theme">Off</a>
+		<br><br>
+		<h3>WebSocket test</h3>
+		<div class="w3-section">      
+			<input id="textbox" class="w3-input" type="text"/>
+			<label>Send/Receive - Box</label>
 		</div>
-
-		<div class="w3-third">
-			<div class="w3-card w3-container" style="min-height:460px">
-				<h3>WebSocket test</h3><br>
-				<div class="w3-section">      
-				<input id="textbox" class="w3-input" type="text"/>
-				<label>Send/Receive - Box</label>
-				</div>
-				<a id="sendButton" class="w3-button w3-theme">Send</a>
-				<input id="slider" type="range" min="0" max="255" value="0" step="5" class="w3-input"/>
-				<!-- <a onclick="OpenWebsocket()" id="connectButton" class="w3-button w3-theme">Connect</a>-->
-				<!-- <a onclick="CloseWebsocket()" id="disconnectButton" class="w3-button w3-theme w3-disabled">Disconnect</a>-->
-			</div>
-		</div>
-
-		<div class="w3-third">
-			<div class="w3-card w3-container" style="min-height:460px">
-				<h3>Design</h3><br>
-				<i class="fa fa-diamond w3-margin-bottom w3-text-theme" style="font-size:120px"></i>
-				<p>text</p>
-				<p>more text</p>
-				<p>more fucking text</p>
-				<p>even more fucking text</p>
-			</div>
-		</div>
+		<a id="sendButton" class="w3-button w3-theme">Send</a>
+		<input id="slider" type="range" min="0" max="255" value="0" step="5" class="w3-input"/>
+		<!-- <a onclick="OpenWebsocket()" id="connectButton" class="w3-button w3-theme">Connect</a>-->
+		<!-- <a onclick="CloseWebsocket()" id="disconnectButton" class="w3-button w3-theme w3-disabled">Disconnect</a>-->			
 	</div>
 	
-	<!-- NAV BAR 
-	<div class="w3-bottom">
-		<div class="w3-bar"> TODO: function for active page switch
-			<a href="#" class="w3-bar-item w3-button w3-mobile w3-green" style="width:33%">Home</a>
-			<a href="#" class="w3-bar-item w3-button w3-mobile" style="width:33%">Link 1</a>
-			<a href="#" class="w3-bar-item w3-button w3-mobile" style="width:33%">Link 2</a>
-		</div>
+	<!-- EFFECT 2 -->
+	<div id="effect2" class="w3-center w3-margin-top w3-card w3-container effect" style="display:none">
+		<h2>EFFECT 2</h2>
 	</div>
-	-->
+	
+	<!-- EFFECT 2 -->
+	<div id="effect3" class="w3-center w3-margin-top w3-card w3-container effect" style="display:none">
+		<h2>EFFECT 3</h2>
+	</div>
 	
 <script>
 	// --------------- WebSocket handling ------------
 	ws = new WebSocket("ws://192.168.178.6/ws");
+	var wsTimeout = setTimeout(function() {
+		document.getElementById('inputlockicon').className.replace("fas fa-lock", "fas fa-sync-alt");
+		document.getElementById('inputlocktext').style.display = "block";
+		document.getElementById('inputlockreload').style.pointerEvents = "auto";		
+	}, 5000);
 	
 	ws.onopen = function() {
-		//enableElement("textbox");
-		//enableElement("sendButton");
-		//disableElement("connectButton");
-		//enableElement("disconnectButton");
-		
 		console.log("WS: Connected");
+		clearTimeout(wsTimeout);
+		document.getElementById('inputlock').style.display = "none";
+		AJAX_JSON_Req();
 	};
-	 
+
     ws.onclose = function() {
-		//disableElement("textbox");
-		//disableElement("sendButton");
-		//enableElement("connectButton");
-		//disableElement("disconnectButton");
 		console.log("WS: Connection closed");
+		document.getElementById('inputlock').style.display = "block";
+		document.getElementById('inputlockicon').className.replace("fas fa-lock", "fas fa-sync-alt");
+		document.getElementById('inputlocktext').style.display = "block";
+		document.getElementById('inputlockreload').style.pointerEvents = "auto";
 	};
 	
 	ws.onmessage = function(evt) {
@@ -155,9 +154,9 @@
 		}
 		AJAX_req.send();
 	}
-	AJAX_JSON_Req();
 	
 	function writeDefaults() {
+		console.log("Settings loaded");
 		textbox.value = settings.brightness;
 		slider.value = settings.brightness;
 	}
@@ -189,12 +188,29 @@
 	
 	// sidebar
 	var sidebar = document.getElementById('sidebar');
+	var overlay = document.getElementById('overlay');
 	function openSidebar() {
 		sidebar.style.display = "block";
+		overlay.style.display = "block";
 	}
 
 	function closeSidebar() {
 		sidebar.style.display = "none";
+		overlay.style.display = "none";
+	}
+	
+	function changeEffect(evt, newEffect) {
+		var i, x, effectlinks;
+		x = document.getElementsByClassName("effect");
+		for (i = 0; i < x.length; i++) {
+			x[i].style.display = "none";
+		}
+		effectlinks = document.getElementsByClassName("effectlink");
+		for (i = 0; i < effectlinks.length; i++) {
+			effectlinks[i].className = effectlinks[i].className.replace(" w3-deep-orange", "");
+		}
+		document.getElementById(newEffect).style.display = "block";
+		evt.currentTarget.className += " w3-deep-orange";
 	}
 	
 	// --------------- other functions ---------------
