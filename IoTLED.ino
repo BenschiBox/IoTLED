@@ -212,38 +212,6 @@ void setup() {
   /* // Route to load style.css file
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/style.css", "text/css");
-  });
-
-  // Route to turn effect1 on
-  server.on("/effect1on", HTTP_GET, [](AsyncWebServerRequest *request){
-    Serial.println("LED: Rainbow on");
-    effect1State = "on";
-    effect2State = "off";    
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
-  
-  // Route to turn effect1 off
-  server.on("/effect1off", HTTP_GET, [](AsyncWebServerRequest *request){
-    Serial.println("LED: off");
-    effect1State = "off";
-    effect2State = "off";    
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
-
-  // Route to turn effect2 on
-  server.on("/effect2on", HTTP_GET, [](AsyncWebServerRequest *request){
-    Serial.println("LED: Solid red on");
-    effect1State = "off";
-    effect2State = "on";    
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
-  
-  // Route to turn effect2 off
-  server.on("/effect2off", HTTP_GET, [](AsyncWebServerRequest *request){
-    Serial.println("LED: off");
-    effect1State = "off";
-    effect2State = "off";    
-    request->send(SPIFFS, "/index.html", String(), false, processor);
   }); */
 
   ws.onEvent(onWsEvent);
@@ -252,13 +220,6 @@ void setup() {
 }
 
 void loop(){
-  /*// Wait for WebSocket event then send
-  if(globalClient != NULL && globalClient->status() == WS_CONNECTED) {
-      String randomNumber = String(random(0,20));
-      globalClient->text(randomNumber);
-  }
-  delay(1000);*/
-  
   // Run selected LED effect
   //if (effect1State == "on") {               // Rainbow
   //  fill_rainbow(leds, NUM_LEDS, gHue, 7);
