@@ -25,7 +25,7 @@ For now the goal is to control 2 LED-Strips over an ~~android app~~ ESP32-driven
 * Program custom LED effects
 * ~~Setting up webserver~~
 * ~~Configure webserver to control LEDs~~
-* Get webserver to transfer data with the controller
+* ~~Get webserver to transfer data with the controller~~
 * Integrate music visualizer
 * Finalize Website-Design and LED effects
 * Integrate (Google) Assistant(s) _(?)_ 
