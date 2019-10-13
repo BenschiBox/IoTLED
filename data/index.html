@@ -8,6 +8,8 @@
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" 
 	integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 	
+	<script src="https://cdn.jsdelivr.net/npm/@jaames/iro/dist/iro.min.js"></script>
+	
 	<!-- Browser / App Favicon --> 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -34,10 +36,12 @@
 			<button onclick="closeSidebar()" class="w3-bar-item w3-large w3-dark-grey w3-padding-16" style="cursor:pointer">
 			Effekt-Menü <span class="w3-display-right w3-margin-right">&times;</span></button>
 		</div>
-		<a href="#" class="w3-bar-item w3-border-bottom w3-button effectlink w3-deep-orange" 
-		onclick="changeEffect(event, 'effect1')">Effect 1</a>
-		<a href="#" class="w3-bar-item w3-border-bottom w3-button effectlink" onclick="changeEffect(event, 'effect2')">Effect 2</a>
-		<a href="#" class="w3-bar-item w3-border-bottom w3-button effectlink" onclick="changeEffect(event, 'effect3')">Effect 3</a>
+		<a id="effectlink1" class="w3-bar-item w3-border-bottom w3-button effectlink w3-deep-orange" 
+		onclick="changeEffect(event, 'effect1', true)">Einfache Farbe</a>
+		<a id="effectlink2" class="w3-bar-item w3-border-bottom w3-button effectlink"
+		onclick="changeEffect(event, 'effect2', true)">Debug</a>
+		<a id="effectlink3" class="w3-bar-item w3-border-bottom w3-button effectlink"
+		onclick="changeEffect(event, 'effect3', true)">Fire</a>
 	</nav>
 	
 	<!-- Overlay -->
@@ -53,15 +57,14 @@
 
 	<!-- EFFECT 1 -->
 	<div id="effect1" class="w3-center w3-margin-top w3-card w3-container effect">
-		<h3>Effect</h3>
-		<p>Rainbow</p>
-		<a id="btnRainbow1" class="w3-button w3-theme">On</a>
-		<a id="btnRainbow2" class="w3-button w3-theme">Off</a>
-		<br>
-		<p>Solid red</p>
-		<a id="btnSolid1" class="w3-button w3-theme">On</a>
-		<a id="btnSolid2" class="w3-button w3-theme">Off</a>
-		<br><br>
+		<h3>Einfache Farbe</h3>
+		<div class="w3-container">
+			<div id="effect1color" class="w3-margin"></div>
+		</div>
+	</div>
+	
+	<!-- EFFECT 2 -->
+	<div id="effect2" class="w3-center w3-margin-top w3-card w3-container effect" style="display:none">
 		<h3>WebSocket test</h3>
 		<div class="w3-section">      
 			<input id="textbox" class="w3-input" type="text"/>
@@ -69,167 +72,16 @@
 		</div>
 		<a id="sendButton" class="w3-button w3-theme">Send</a>
 		<input id="slider" type="range" min="0" max="255" value="0" step="5" class="w3-input"/>
-		<!-- <a onclick="OpenWebsocket()" id="connectButton" class="w3-button w3-theme">Connect</a>-->
-		<!-- <a onclick="CloseWebsocket()" id="disconnectButton" class="w3-button w3-theme w3-disabled">Disconnect</a>-->			
+		<!-- <a onclick="OpenWebsocket()" id="connectButton" class="w3-button w3-theme">Connect</a> -->
+		<!-- <a onclick="CloseWebsocket()" id="disconnectButton" class="w3-button w3-theme w3-disabled">Disconnect</a> -->
 	</div>
 	
-	<!-- EFFECT 2 -->
-	<div id="effect2" class="w3-center w3-margin-top w3-card w3-container effect" style="display:none">
-		<h2>EFFECT 2</h2>
-	</div>
-	
-	<!-- EFFECT 2 -->
+	<!-- EFFECT 3 -->
 	<div id="effect3" class="w3-center w3-margin-top w3-card w3-container effect" style="display:none">
-		<h2>EFFECT 3</h2>
+		<h2>Fire</h2>
 	</div>
 	
-<script>
-	// --------------- WebSocket handling ------------
-	ws = new WebSocket("ws://192.168.178.6/ws");
-	var wsTimeout = setTimeout(function() {
-		document.getElementById('inputlockicon').className.replace("fas fa-lock", "fas fa-sync-alt");
-		document.getElementById('inputlocktext').style.display = "block";
-		document.getElementById('inputlockreload').style.pointerEvents = "auto";		
-	}, 5000);
-	
-	ws.onopen = function() {
-		console.log("WS: Connected");
-		clearTimeout(wsTimeout);
-		document.getElementById('inputlock').style.display = "none";
-		AJAX_JSON_Req();
-	};
+	<script src="IoTLED.js"></script>
 
-    ws.onclose = function() {
-		console.log("WS: Connection closed");
-		document.getElementById('inputlock').style.display = "block";
-		document.getElementById('inputlockicon').className.replace("fas fa-lock", "fas fa-sync-alt");
-		document.getElementById('inputlocktext').style.display = "block";
-		document.getElementById('inputlockreload').style.pointerEvents = "auto";
-	};
-	
-	ws.onmessage = function(evt) {
-		textbox.value = evt.data;
-		slider.value = evt.data;
-	}
-	
-	function sendData(data) {
-		ws.send(data);
-	}
-	
-	function closeWebsocket() {
-		ws.close();
-	}
-	
-	var lastcall = Date.now();
-	function msGoneBy(ms) {
-		if (ms < 0 || ms === undefined)
-		{
-			ms = 50;
-		}
-		
-		if (Date.now() - lastcall >= ms)
-		{
-			lastcall = Date.now();
-			return true;
-		}
-		
-		console.log("WS: limiter engaged!");
-		return false;
-	}
-	
-	// --------------- Defaults JSON -----------------
-	
-	var settings;
-	function AJAX_JSON_Req()
-	{
-		var AJAX_req = new XMLHttpRequest();
-		AJAX_req.open("GET", "/settings.json", true);
-		AJAX_req.setRequestHeader("Content-type", "application/json");
-		AJAX_req.onreadystatechange = function() {
-			if( AJAX_req.readyState == 4 && AJAX_req.status == 200 )
-			{
-				settings = JSON.parse( AJAX_req.responseText );
-				writeDefaults();
-			}
-		}
-		AJAX_req.send();
-	}
-	
-	function writeDefaults() {
-		console.log("Settings loaded");
-		textbox.value = settings.brightness;
-		slider.value = settings.brightness;
-	}
-	
-	// --------------- Event handler -----------------
-	
-	// textbox
-	var textbox = document.getElementById('textbox');
-	textbox.addEventListener('keyup', function(event) {
-		event.preventDefault();
-		if (event.keyCode === 13) {
-			sendButton.click();
-		}
-	});
-	
-	// slider
-	var slider = document.getElementById('slider');
-	slider.addEventListener('input', function() {
-		if (msGoneBy(25)) {
-			sendData(slider.value);
-		}
-	});
-
-	// sendButton
-	var sendButton = document.getElementById('sendButton');
-	sendButton.addEventListener('click', function() {
-		sendData(textbox.value);
-	});
-	
-	// sidebar
-	var sidebar = document.getElementById('sidebar');
-	var overlay = document.getElementById('overlay');
-	function openSidebar() {
-		sidebar.style.display = "block";
-		overlay.style.display = "block";
-	}
-
-	function closeSidebar() {
-		sidebar.style.display = "none";
-		overlay.style.display = "none";
-	}
-	
-	function changeEffect(evt, newEffect) {
-		var i, x, effectlinks;
-		x = document.getElementsByClassName("effect");
-		for (i = 0; i < x.length; i++) {
-			x[i].style.display = "none";
-		}
-		effectlinks = document.getElementsByClassName("effectlink");
-		for (i = 0; i < effectlinks.length; i++) {
-			effectlinks[i].className = effectlinks[i].className.replace(" w3-deep-orange", "");
-		}
-		document.getElementById(newEffect).style.display = "block";
-		evt.currentTarget.className += " w3-deep-orange";
-	}
-	
-	// --------------- other functions ---------------
-	
-	function disableElement(id) {
-		var element = document.getElementById(id);
-		if (!element.classList.contains('w3-disabled')) {
-			element.classList.add('w3-disabled');
-		}
-	}
-	
-	function enableElement(id) {
-		var element = document.getElementById(id);
-		if (element.classList.contains('w3-disabled')) {
-			element.classList.remove('w3-disabled');
-			element.disabled = false;
-		}
-	}
-</script>
 </body>
-
 </html>

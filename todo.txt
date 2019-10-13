@@ -1,5 +1,2 @@
-
-BASIC EFFECTS:
-SOLID COLOR
-	Split function
+ws für datenübertragung, festlegen von activeeffect etc
 	

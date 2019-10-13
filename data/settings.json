@@ -1,3 +1,7 @@
 {
-  "brightness": 10
+  "activeEffect": 1,
+  "brightness": 10,
+  "effect1Data":{
+    "color1":"#00ff00"
+  }
 }
