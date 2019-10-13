@@ -123,7 +123,6 @@ void loadSettings() {
 
 void saveSettings() {
   SPIFFS.remove("/settings.json");
-
   File settings = SPIFFS.open("/settings.json", "w");
   if (!settings) {
     Serial.println("ERR: Failed to open settings file for writing!");
@@ -187,7 +186,6 @@ void setup() {
   if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
     Serial.println("STA Failed to configure");
   }
-
   // Connect to Wi-Fi network with SSID and password
   Serial.print("Connecting to ");
   Serial.println(ssid);
