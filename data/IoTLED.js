@@ -24,20 +24,36 @@ ws.onclose = function() {
 ws.onmessage = function(evt) {
     //textbox.value = evt.data;
     //slider.value = evt.data;
+    console.log("Received data for some reason?");
 }
 
 function sendData(type, data) {
     var msg = "0x";
     switch (type) {
-        case 01:
+        case 99:
         case "effectchange":
+            msg += "99" + data;
+            break;
+        case 98:
+        case "brightness":
+            msg += "98" + data;
+            break;
+        case 0:
+        case "strip_off":
+            msg += "00";
+        case 1:
+        case "effect1_data":
             msg += "01" + data;
             break;
-        case 02:
-        case "effect1_data":
+        case 2:
+        case "effect2_data":
             msg += "02" + data; 
             break;
-
+        case 3:
+        case "effect3_data":
+            msg += "03" + data; 
+            break;
+            
         default:
             break;
     }
@@ -123,16 +139,27 @@ sendButton.addEventListener('click', function() {
     //sendData(textbox.value);
 });
 
-// sidebar
-var sidebar = document.getElementById('sidebar');
+// Sidebars
+var effectSidebar = document.getElementById('effectsidebar');
+var colorSidebar = document.getElementById('colorsidebar');
 var overlay = document.getElementById('overlay');
-function openSidebar() {
-    sidebar.style.display = "block";
+function openSidebar(sidebar) {
+    if (sidebar == "effect") {
+        effectsidebar.style.display = "block";
+        colorsidebar.style.display = "none";
+    }
+    else if (sidebar == "color"){
+        colorsidebar.style.display = "block";
+        effectsidebar.style.display = "none";
+    }
+    else
+        return;
     overlay.style.display = "block";
 }
 
 function closeSidebar() {
-    sidebar.style.display = "none";
+    effectsidebar.style.display = "none";
+    colorsidebar.style.display = "none";
     overlay.style.display = "none";
 }
 
@@ -156,9 +183,11 @@ function changeEffect(evt, newEffect, sendChange) {
 }
 
 // ----------------- color picker ----------------
-var colorPicker = new iro.ColorPicker('#effect1color', {
+var colorPicker = new iro.ColorPicker('#colorwheel', {
     color: "#ff0000",
-    width: 200,
+    borderWidth: 3,
+    borderColor: '#000000',
+    width: 250,
     layout: [{
         component: iro.ui.Wheel,
         options: {}
@@ -185,12 +214,13 @@ function disableElement(id) {
     if (!element.classList.contains('w3-disabled')) {
         element.classList.add('w3-disabled');
     }
+    element.disabled = true;
 }
 
 function enableElement(id) {
     var element = document.getElementById(id);
     if (element.classList.contains('w3-disabled')) {
         element.classList.remove('w3-disabled');
-        element.disabled = false;
     }
+    element.disabled = false;
 }

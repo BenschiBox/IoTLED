@@ -30,7 +30,7 @@ With the goal to make the webapp as user-friendly as possible, I've opted for a 
 * ~~Configure webserver to control LEDs~~
 * ~~Get webserver to transfer data with the controller~~
 * ~~Finish webapp/webserver-backend~~
-* Finish webapp frontend (designing)
+* ~~Finish webapp frontend (designing)~~
 * Integrate music visualizer
 * Finalize webapp-design and LED effects
 * _Integrate Google Assistant (?)_ 

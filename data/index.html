@@ -30,8 +30,8 @@
 		</div>
 	</div>
 
-	<!-- Sidebar -->
-	<nav class="w3-sidebar w3-animate-left w3-bar-block w3-card w3-theme-light" style="display:none;z-index:4" id="sidebar">
+	<!-- Effect Sidebar (left) -->
+	<nav class="w3-sidebar w3-animate-left w3-bar-block w3-card w3-theme-light" style="display:none;z-index:4" id="effectsidebar">
 		<div class="w3-display-container">
 			<button onclick="closeSidebar()" class="w3-bar-item w3-large w3-dark-grey w3-padding-16" style="cursor:pointer">
 			Effekt-Menü <span class="w3-display-right w3-margin-right">&times;</span></button>
@@ -43,13 +43,26 @@
 		<a id="effectlink3" class="w3-bar-item w3-border-bottom w3-button effectlink"
 		onclick="changeEffect(event, 'effect3', true)">Fire</a>
 	</nav>
+
+	<!-- Colorwheel sidebar (right) -->
+	<nav class="w3-sidebar w3-animate-right w3-bar-block w3-theme-light" style="display:none;right:0;width:320px;z-index:4" id="colorsidebar">
+		<div class="w3-display-container">
+			<button onclick="closeSidebar()" class="w3-bar-item w3-large w3-dark-grey w3-padding-16" style="cursor:pointer">
+			Farben-Menü <span class="w3-display-right w3-margin-right">&times;</span></button>
+		</div>
+		<div class="w3-container">
+			<div id="colorwheel" class="w3-margin w3-margin-top"></div>
+		</div>
+	</nav>
+	
 	
 	<!-- Overlay -->
 	<div class="w3-overlay" onclick="closeSidebar()" id="overlay"></div>
 	
 	<!-- Header -->
 	<header class="w3-container w3-theme w3-display-container" id="myHeader">
-		<button class="w3-button w3-hover-red w3-large" onclick="openSidebar()">☰</button>
+		<button class="w3-button w3-hover-red w3-large" onclick="openSidebar('effect')">☰</button>
+		<button class="w3-button w3-hover-red w3-large w3-right" onclick="openSidebar('color')">☰</button>
 		<div class="w3-display-middle">
 			<h1 class="w3-xlarge">LED - Manager</h1>
 		</div>
@@ -58,9 +71,7 @@
 	<!-- EFFECT 1 -->
 	<div id="effect1" class="w3-center w3-margin-top w3-card w3-container effect">
 		<h3>Einfache Farbe</h3>
-		<div class="w3-container">
-			<div id="effect1color" class="w3-margin"></div>
-		</div>
+		<!-- TODO: Color button here! -->
 	</div>
 	
 	<!-- EFFECT 2 -->

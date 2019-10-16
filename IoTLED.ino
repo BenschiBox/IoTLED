@@ -28,8 +28,8 @@ struct effectData {
 uint8_t gHue = 0; // rotating "base color" for rainbow effect
 
 // Network
-const char* ssid     = "notactuallymywifi";
-const char* password = "youwouldliketoknow";
+const char* ssid     = "*";
+const char* password = "*";
 
 IPAddress local_IP(192, 168, 178, 6);
 IPAddress gateway(192, 168, 178, 1);
@@ -67,19 +67,46 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 
     if (msg.startsWith("0x")) {
       String temp = msg.substring(2, 4);
+      uint8_t tempEffect;
       int type = temp.toInt();
       msg.remove(0, 4);
-      char *eptr;
+      char *eptr; 
 
       switch (type) {
-        case 1:
-          activeEffect = (uint8_t)msg.toInt();
+        case 99:  // change activeEvent
+          temp = msg.substring(0,2);
+          tempEffect = (uint8_t)atoi(temp.c_str());
+          if (tempEffect >= 1 && tempEffect <= 3)
+            activeEffect = tempEffect;
           break;
-        case 2:
-          msg.remove(0, 1);
-          d_effect1.color1 = (uint32_t)strtoul(msg.c_str(), &eptr, 16);
+          
+        case 98:  // brightness
+          temp = msg.substring(0,3);
+          brightness = (uint8_t)atoi(temp.c_str());
           break;
 
+        case 0:  // stip off
+          activeEffect = 0;
+          break;
+          
+        case 1:  // effect1 data
+          activeEffect = 1;
+          temp = msg.substring(1, 7); //filter out #
+          d_effect1.color1 = (uint32_t)strtoul(temp.c_str(), &eptr, 16);
+          break;
+
+        case 2:  // effect2 data
+          activeEffect = 2;
+          //temp = msg.substring(1, 7); //filter out #
+          //d_effect1.color1 = (uint32_t)strtoul(temp.c_str(), &eptr, 16);
+          break;
+
+        case 3:  // effect3 data
+          activeEffect = 3;
+          //temp = msg.substring(1, 7); //filter out #
+          //d_effect1.color1 = (uint32_t)strtoul(temp.c_str(), &eptr, 16);
+          break;
+          
         default:
           break;
       }
@@ -190,9 +217,16 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
+
+  // Wait 5 seconds for WiFi to connect or else reboot
+  uint8_t wifitimeout = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    if (++wifitimeout > 10) {
+      WiFi.disconnect(true);
+      ESP.restart();
+    }
   }
   // Print local IP address and start web server
   Serial.println("");
@@ -326,12 +360,17 @@ void loop() {
       fill_solid(leds, NUM_LEDS, d_effect1.color1);
       break;
 
+    case 2:
+      fill_solid(leds, NUM_LEDS, CRGB::Blue);
+      break;
+
     case 3:
       Fire(55,120,15);
       break;
 
+    case 0:
     default:
-      fill_solid(leds, NUM_LEDS, CRGB::Blue);
+      fill_solid(leds, NUM_LEDS, CRGB::Black);
       break;
   }
 
@@ -340,10 +379,3 @@ void loop() {
   FastLED.delay(1000 / FRAMES_PER_SECOND);
   //EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
 }
-
-// Useful for later
-
-// manual restart button (wire to a GPIO)
-//WiFi.disconnect(true);
-//SPIFFS.format();
-//ESP.restart();

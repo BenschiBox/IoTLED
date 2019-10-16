@@ -1,0 +1,18 @@
+notes:
+
+js activeControlElement var needed for sendData type
+js request color buttons with "this"
+
+split arduino code for lighting effects in seperate files
+
+0x      00      ........
+preset  type    data
+
+types:
+99 change activeEffect
+98 brightness
+-------------
+00 strip off
+01 effect1 data (solid color)
+02 effect2 data
+03 ....

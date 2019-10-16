@@ -1,2 +1,0 @@
-ws für datenübertragung, festlegen von activeeffect etc
-	
