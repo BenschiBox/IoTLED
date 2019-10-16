@@ -1,11 +1,12 @@
 # IoTLED
 
-The aim of this Project is to create, setup and program an Internet of Things device capable of controlling adressable LED-Strips like WS2813.
-
-The goal is to control 2 LED-Strips over an ESP32-driven webapp, in which users can select between different lightning setups and also a Music-Visualizer mode using an AUX input.
+The aim of this Project is to create, setup and program an Internet of Things device capable of controlling adressable LED-Strips.
+This is achieved over an ESP32-driven webapp, in which users can select between different lightning setups and also a Music-Visualizer mode using an AUX input.
 
 The webapp used to control the LEDs is designed as a single-page-webapp, with everything written in native HTML, JS and CSS.
 With the goal to make the webapp as user-friendly as possible, I've opted for a [material design](https://material.io/design/) utilising the W3.CSS framework.
+
+In my particular setup i used 2x WS2813 LED-strips, although it should work with any amount/FastLED supported chipsets given some tweaking.
 
 ## Built with
 * [arduino-esp32](https://github.com/espressif/arduino-esp32) - Arduino Core for ESP32
