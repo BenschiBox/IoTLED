@@ -3,19 +3,17 @@
 The aim of this Project is to create, setup and program an Internet of Things device capable of controlling adressable LED-Strips.
 This is achieved over an ESP32-driven webapp, in which users can select between different lighting setups and also a Music-Visualizer mode using an AUX input.
 
-The webapp used to control the LEDs is designed as a single-page-webapp, with everything written in native HTML, JS and CSS.
-With the goal to make the webapp as user-friendly as possible, I've followed the [material design guidelines](https://material.io/design/) utilising the [W3.CSS Framework](https://www.w3schools.com/w3css/default.asp).
+The webapp used to control the LEDs is made with Flutter/Dart, which makes the app very user-friendly.
 
-In my particular setup i used 2x WS2813 LED-strips, although it should work with any amount/FastLED supported chipsets given some tweaking.
+In my particular setup i use 2x WS2813 LED-strips, although it should work with any amount or any FastLED supported chipset, given some tweaking.
 
 ## Built with
 * [arduino-esp32](https://github.com/espressif/arduino-esp32) - Arduino Core for ESP32
 * [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) - Asynchronous Webserver Library with Websocket integration
 * [FastLED](https://github.com/FastLED/FastLED) - Library for controlling LEDs
 * [SparkFun Spectrum Shield](https://www.sparkfun.com/products/13116) - Arduino Shield with MSGEQ7 Audio Band ICs
-* [W3.CSS Framework](https://www.w3schools.com/w3css/default.asp) - W3school's CSS Framework used to build the website
+* [Flutter](https://flutter.dev/) - Google's Toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase
 * [iro.js color picker](https://iro.js.org/) - An HSV color picker widget for JavaScript, with a modern SVG-based user interface
-
 
 ## Tremendous help from here
 * https://randomnerdtutorials.com/esp32-web-server-arduino-ide
@@ -25,14 +23,14 @@ In my particular setup i used 2x WS2813 LED-strips, although it should work with
 
 
 ## Goals
-
-* Finalize Hardware setup to work with external power supply and draw circuit configuration etc.
-* ~~Getting LEDs to work with hardware setup~~
+* ~~Getting LEDs to work with basic hardware setup~~
 * ~~Setup webserver~~
 * ~~Configure webserver to control LEDs~~
-* ~~Get webserver to transfer data with the controller~~
-* ~~Finish webapp/webserver-backend~~
-* ~~Finish webapp frontend (designing)~~
+* ~~Get users to transfer data with the controller~~
+* ~~1st webapp/webserver-backend iteration~~
+* ~~Design basic webapp frontend~~
+* Rewrite the entire webapp from scratch with flutter because fuck you thats why
 * Integrate music visualizer
 * Finalize webapp-design and LED effects
-* _Integrate Google Assistant (?)_ 
+* Finalize Hardware setup, draw Circuit Diagram for installation of the Strips
+* _Integrate Google Assistant (?)_
