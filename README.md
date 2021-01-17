@@ -29,7 +29,7 @@ In my particular setup i use 2x WS2813 LED-strips, although it should work with 
 * ~~Get users to transfer data with the controller~~
 * ~~1st webapp/webserver-backend iteration~~
 * ~~Design basic webapp frontend~~
-* Learn to use Flutter and rewrite the entire webapp from scratch because fuck you thats why
+* Learn how to use Flutter and rewrite the entire webapp from scratch because fuck you thats why
 * Integrate music visualizer
 * Finalize webapp-design and LED effects
 * Finalize Hardware setup, draw Circuit Diagram for installation of the Strips
